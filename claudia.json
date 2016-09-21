@@ -1,0 +1,11 @@
+{
+  "lambda": {
+    "role": "tokyotrains-executor",
+    "name": "tokyotrains",
+    "region": "ap-northeast-1"
+  },
+  "api": {
+    "id": "5hfw5ejn20",
+    "module": "bot"
+  }
+}

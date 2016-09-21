@@ -1,0 +1,15 @@
+{
+  "name": "tokyotrains",
+  "version": "1.0.0",
+  "description": "TokyoTrains!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "claudia-bot-builder": "^1.4.4",
+    "huh": "^1.1.4"
+  }
+}
