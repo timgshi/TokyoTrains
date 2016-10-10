@@ -1,6 +1,7 @@
 var botBuilder = require('claudia-bot-builder'),
     excuse = require('huh');
 
+var sendPromiseResolve = null;
 
 var Wit = null;
 var log = null;
@@ -22,17 +23,31 @@ var WIT_TOKEN = "SO4FIOF2DE67TXHJO73XGNGNE76IQK64";
 
 var actions = {
   send: function send(request, response) {
+
+    console.log('in sending');
+
     var sessionId = request.sessionId;
     var context = request.context;
     var entities = request.entities;
     var text = response.text;
     var quickreplies = response.quickreplies;
 
+    // console.log('user said...\n', request.text);
+    // console.log('\n\nsending...\n', response.text);
+
     return new Promise(function (resolve, reject) {
       console.log('user said...\n', request.text);
       console.log('\n\nsending...\n', response.text);
-      return resolve();
+      sendPromiseResolve(response.text);
+      console.log('resolved sending');
+      resolve();
     });
+
+    // return new Promise(function (resolve, reject) {
+    //   console.log('user said...\n', request.text);
+    //   console.log('\n\nsending...\n', response.text);
+    //   return resolve();
+    // });
   },
   getNow: function getNow(_ref) {
     var context = _ref.context;
@@ -51,17 +66,20 @@ var actions = {
     var entities = _ref2.entities;
 
     return new Promise(function (resolve, reject) {
-      console.log(JSON.stringify(context));
-      console.log(JSON.stringify(entities));
+      console.log('in get last train');
+      // console.log(JSON.stringify(context));
+      // console.log(JSON.stringify(entities));
       var departures_string = "";
       departures_string = "23:05 (to Shibuya) and 23:10 (to Ginza)";
       if (entities['station_name'] && entities['station_name'].length == 1) {
         var station_name = entities['station_name'][0]['value'];
         departures_string += ' from ' + station_name;
-        context.last_train_departures = departures_string;
+        context['last_train_departures'] = departures_string;
+        delete context['missing_station_name'];
       } else {
         context.missing_station_name = true;
       }
+      console.log(JSON.stringify(context));
       return resolve(context);
     });
   },
@@ -108,13 +126,43 @@ var wit = new Wit({
 
 module.exports = botBuilder(function (request, originalApiRequest) {
   console.log('got message');
-  return 'Thanks for sending ' + request.text  + 
-      '. Your message is very important to us, but ' + 
-      excuse.get();
-  // return new Promise(function(resolve, reject) {
-  //   var message = 'Thanks for sending ' + request.text  + 
-  //       '. Your message is very important to us, but ' + 
-  //       excuse.get();
-  //   return resolve(message);
-  // });
+  console.log(JSON.stringify(request));
+  originalApiRequest.lambdaContext.callbackWaitsForEmptyEventLoop = false;
+
+  var sessionId = 2;
+  var messageText = request.text;
+  var sessionContext = {};
+
+  return new Promise(function(resolve, reject) {
+    sendPromiseResolve = resolve;
+    wit.runActions(
+      sessionId,
+      messageText,
+      sessionContext
+    ).then(function(context) {
+
+      console.log('FINISHED WIT ACTIONS');
+      console.log(JSON.stringify(context));
+
+      
+
+      // return 'Thanks for sending ' + request.text  + 
+      //   '. Your message is very important to us, but ' + 
+      //   excuse.get() + '. ' + JSON.stringify(context);
+
+    }).catch(function (err) {
+      console.error('Oops! Got an error from Wit: ', err.stack || err);
+      return reject('Oops! Got an error from Wit');
+    });
+  }).then(function(result) {
+    console.log('in final promise');
+    console.log(result);
+    return result;
+  });
+
+  
+
+  // return 'Thanks for sending ' + request.text  + 
+  //     '. Your message is very important to us, but ' + 
+  //     excuse.get();
 });
