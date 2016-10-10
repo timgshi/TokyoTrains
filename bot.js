@@ -32,9 +32,6 @@ var actions = {
     var text = response.text;
     var quickreplies = response.quickreplies;
 
-    // console.log('user said...\n', request.text);
-    // console.log('\n\nsending...\n', response.text);
-
     return new Promise(function (resolve, reject) {
       console.log('user said...\n', request.text);
       console.log('\n\nsending...\n', response.text);
@@ -42,20 +39,12 @@ var actions = {
       console.log('resolved sending');
       resolve();
     });
-
-    // return new Promise(function (resolve, reject) {
-    //   console.log('user said...\n', request.text);
-    //   console.log('\n\nsending...\n', response.text);
-    //   return resolve();
-    // });
   },
   getNow: function getNow(_ref) {
     var context = _ref.context;
     var entities = _ref.entities;
 
     return new Promise(function (resolve, reject) {
-      // console.log('user said...', request.text);
-      // console.log('sending...', JSON.stringify(response));
       context.now = new Date();
       context.now = context.now.toString();
       return resolve(context);
@@ -67,8 +56,6 @@ var actions = {
 
     return new Promise(function (resolve, reject) {
       console.log('in get last train');
-      // console.log(JSON.stringify(context));
-      // console.log(JSON.stringify(entities));
       var departures_string = "";
       departures_string = "23:05 (to Shibuya) and 23:10 (to Ginza)";
       if (entities['station_name'] && entities['station_name'].length == 1) {
@@ -88,16 +75,16 @@ var actions = {
     var entities = _ref3.entities;
 
     return new Promise(function (resolve, reject) {
-      console.log(JSON.stringify(context));
-      console.log(JSON.stringify(entities));
+      console.log('in get next train');
       var departures_string = "";
       departures_string = "23:05 (to Shibuya) and 23:10 (to Ginza)";
       if (entities['station_name'] && entities['station_name'].length == 1) {
         var station_name = entities['station_name'][0]['value'];
         departures_string += ' from ' + station_name;
-        context.next_train_departures = departures_string;
+        context['next_train_departures'] = departures_string;
+        delete context['missing_station_name'];
       } else {
-        context.missing_station_name = true;
+        context['missing_station_name'] = true;
       }
       return resolve(context);
     });
@@ -111,18 +98,6 @@ var wit = new Wit({
   logger: new log.Logger(log.INFO)
 });
 // interactive(wit);
-
-
-// const api = botBuilder((request, originalApiRequest) => {
-//   originalApiRequest.lambdaContext.callbackWaitsForEmptyEventLoop = false;
-//   return new Promise(function(resolve, reject) {
-//     return 'Thanks for sending ' + request.text  + 
-//         '. Your message is very important to us, but ' + 
-//         excuse.get();
-//   });
-// });
-
-// module.exports = api;
 
 module.exports = botBuilder(function (request, originalApiRequest) {
   console.log('got message');
@@ -143,12 +118,6 @@ module.exports = botBuilder(function (request, originalApiRequest) {
 
       console.log('FINISHED WIT ACTIONS');
       console.log(JSON.stringify(context));
-
-      
-
-      // return 'Thanks for sending ' + request.text  + 
-      //   '. Your message is very important to us, but ' + 
-      //   excuse.get() + '. ' + JSON.stringify(context);
 
     }).catch(function (err) {
       console.error('Oops! Got an error from Wit: ', err.stack || err);
