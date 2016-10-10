@@ -6,11 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "engines": {
+    "node": "4.3.2"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "claudia-bot-builder": "^1.4.4",
+    "claudia-bot-builder": "^2.0.0",
     "huh": "^1.1.4",
-    "node-wit": "^4.1.0"
+    "node-wit": "laardee/node-wit"
   }
 }

@@ -1,36 +1,32 @@
 var botBuilder = require('claudia-bot-builder'),
     excuse = require('huh');
 
-let Wit = null;
-let log = null;
-let interactive = null;
+
+var Wit = null;
+var log = null;
+// let interactive = null;
+// let = interactive = require('node-wit').interactive;
 try {
   // if running from repo
   Wit = require('../').Wit;
   log = require('../').log;
-  interactive = require('../').interactive;
+  // interactive = require('../').interactive;
 } catch (e) {
   Wit = require('node-wit').Wit;
   log = require('node-wit').log;
-  interactive = require('node-wit').interactive;
+  // interactive = require('node-wit').interactive;
 }
 
 // Wit.ai parameters
 const WIT_TOKEN = "SO4FIOF2DE67TXHJO73XGNGNE76IQK64";
-
-module.exports = botBuilder(function (request) {
-  return 'Thanks for sending ' + request.text  + 
-      '. Your message is very important to us, but ' + 
-      excuse.get();
-});
 
 const actions = {
   send(request, response) {
     const {sessionId, context, entities} = request;
     const {text, quickreplies} = response;
     return new Promise(function(resolve, reject) {
-      console.log('user said...', request.text);
-      console.log('sending...', JSON.stringify(response));
+      console.log('user said...\n', request.text);
+      console.log('\n\nsending...\n', response.text);
       return resolve();
     });
   },
@@ -82,4 +78,29 @@ const wit = new Wit({
   actions,
   logger: new log.Logger(log.INFO)
 });
-interactive(wit);
+// interactive(wit);
+
+
+// const api = botBuilder((request, originalApiRequest) => {
+//   originalApiRequest.lambdaContext.callbackWaitsForEmptyEventLoop = false;
+//   return new Promise(function(resolve, reject) {
+//     return 'Thanks for sending ' + request.text  + 
+//         '. Your message is very important to us, but ' + 
+//         excuse.get();
+//   });
+// });
+
+// module.exports = api;
+
+module.exports = botBuilder(function (request, originalApiRequest) {
+  console.log('got message');
+  return 'Thanks for sending ' + request.text  + 
+      '. Your message is very important to us, but ' + 
+      excuse.get();
+  // return new Promise(function(resolve, reject) {
+  //   var message = 'Thanks for sending ' + request.text  + 
+  //       '. Your message is very important to us, but ' + 
+  //       excuse.get();
+  //   return resolve(message);
+  // });
+});
