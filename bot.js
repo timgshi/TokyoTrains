@@ -18,20 +18,27 @@ try {
 }
 
 // Wit.ai parameters
-const WIT_TOKEN = "SO4FIOF2DE67TXHJO73XGNGNE76IQK64";
+var WIT_TOKEN = "SO4FIOF2DE67TXHJO73XGNGNE76IQK64";
 
-const actions = {
-  send(request, response) {
-    const {sessionId, context, entities} = request;
-    const {text, quickreplies} = response;
-    return new Promise(function(resolve, reject) {
+var actions = {
+  send: function send(request, response) {
+    var sessionId = request.sessionId;
+    var context = request.context;
+    var entities = request.entities;
+    var text = response.text;
+    var quickreplies = response.quickreplies;
+
+    return new Promise(function (resolve, reject) {
       console.log('user said...\n', request.text);
       console.log('\n\nsending...\n', response.text);
       return resolve();
     });
   },
-  getNow({context, entities}) {
-    return new Promise(function(resolve, reject) {
+  getNow: function getNow(_ref) {
+    var context = _ref.context;
+    var entities = _ref.entities;
+
+    return new Promise(function (resolve, reject) {
       // console.log('user said...', request.text);
       // console.log('sending...', JSON.stringify(response));
       context.now = new Date();
@@ -39,8 +46,11 @@ const actions = {
       return resolve(context);
     });
   },
-  getLastTrain({context, entities}) {
-    return new Promise(function(resolve, reject) {
+  getLastTrain: function getLastTrain(_ref2) {
+    var context = _ref2.context;
+    var entities = _ref2.entities;
+
+    return new Promise(function (resolve, reject) {
       console.log(JSON.stringify(context));
       console.log(JSON.stringify(entities));
       var departures_string = "";
@@ -54,8 +64,12 @@ const actions = {
       }
       return resolve(context);
     });
-  }, getNextTrain({context, entities}) {
-    return new Promise(function(resolve, reject) {
+  },
+  getNextTrain: function getNextTrain(_ref3) {
+    var context = _ref3.context;
+    var entities = _ref3.entities;
+
+    return new Promise(function (resolve, reject) {
       console.log(JSON.stringify(context));
       console.log(JSON.stringify(entities));
       var departures_string = "";
@@ -73,9 +87,9 @@ const actions = {
 };
 
 // Setting up our bot
-const wit = new Wit({
+var wit = new Wit({
   accessToken: WIT_TOKEN,
-  actions,
+  actions: actions,
   logger: new log.Logger(log.INFO)
 });
 // interactive(wit);
